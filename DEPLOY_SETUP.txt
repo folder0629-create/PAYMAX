@@ -1,0 +1,16 @@
+PAYMAX Cafe24 자동배포 설정
+
+1) 이 폴더 전체를 GitHub 저장소 main 브랜치에 업로드합니다.
+2) GitHub 저장소 > Settings > Secrets and variables > Actions > New repository secret
+3) 아래 Secret을 추가합니다.
+   FTP_SERVER      = 카페24 FTP 접속주소
+   FTP_USERNAME    = 카페24 FTP 아이디
+   FTP_PASSWORD    = 카페24 FTP 비밀번호
+   FTP_REMOTE_DIR  = 실제 웹 루트 (예: /www)
+
+주의: FTP 비밀번호를 코드나 채팅에 적지 마세요.
+
+4) 저장 후 Actions > Deploy PAYMAX to Cafe24 > Run workflow 로 최초 테스트합니다.
+5) 이후 main 브랜치에 변경사항이 push될 때마다 자동으로 카페24에 배포됩니다.
+
+중요: --delete 옵션이 있으므로 GitHub 저장소가 실제 운영 웹파일의 기준본(source of truth)이 됩니다.
