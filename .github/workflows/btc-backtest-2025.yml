@@ -1,0 +1,23 @@
+name: BTC 2025 Backtest
+on:
+  workflow_dispatch:
+  push:
+    branches: [btc-backtest-2025]
+    paths:
+      - 'btc_backtest_2025/**'
+      - '.github/workflows/btc-backtest-2025.yml'
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r btc_backtest_2025/requirements.txt
+      - run: python btc_backtest_2025/backtest.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: btc-backtest-2025-results
+          path: btc_backtest_2025/output/
