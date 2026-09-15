@@ -14,12 +14,18 @@ def load_2025():
         with zipfile.ZipFile(io.BytesIO(r.content)) as z:
             with z.open(z.namelist()[0]) as f:
                 x=pd.read_csv(f,header=None,names=COLS)
+        # Some Binance Vision monthly archives contain a header row while older ones do not.
+        # Keep only rows with a numeric timestamp so both archive formats are handled safely.
+        x['open_time']=pd.to_numeric(x['open_time'],errors='coerce')
+        x=x[x['open_time'].notna()].copy()
         parts.append(x)
     d=pd.concat(parts,ignore_index=True)
     # Binance Vision timestamps may be milliseconds or microseconds depending on archive vintage.
-    unit='us' if pd.to_numeric(d.open_time,errors='coerce').median()>1e14 else 'ms'
-    d['time']=pd.to_datetime(d.open_time,unit=unit,utc=True)
+    unit='us' if d.open_time.median()>1e14 else 'ms'
+    d['time']=pd.to_datetime(d.open_time,unit=unit,utc=True,errors='coerce')
+    d=d[d['time'].notna()].copy()
     for c in ['open','high','low','close','volume','taker_buy_base']: d[c]=pd.to_numeric(d[c],errors='coerce')
+    d=d.dropna(subset=['open','high','low','close','volume'])
     return d.set_index('time').sort_index()
 
 def ema(s,n): return s.ewm(span=n,adjust=False).mean()
